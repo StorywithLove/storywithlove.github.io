@@ -29,6 +29,10 @@
 
 数据可能存在延迟、缺失值、负值、异常值、跨域失败或临时不可用。页面保留空值和负值，不把空值改成零。OCI 历史接口支持最多 31 天，页面主动限制为 30 天；降级到 Solar Centre 时按最多三天拆分，并以最多三个并发请求合并、排序和去重。任何降级或部分失败都会被明确标注。
 
+### Desert Gardens 限发口径
+
+Desert Gardens（`site_id 5`，1058.4 kW）是 Yulara 最大且主要可调度的光伏阵列。[ARENA 官方项目报告](https://www.arena.gov.au/assets/2018/12/the-power-of-far-flung-arrays-yularas-dispersed-design-to-reduce-system-variability.pdf)说明，该阵列会按当地负荷响应中央电站实时限发（curtailment）信号，以维护小型远端电网稳定。页面曲线展示的是实际并网功率，不是理论可用功率；双峰或正午谷值与该机制高度一致，但不能仅凭公开曲线确定某一个五分钟点的具体限发量。单点归因仍需要 SCADA 功率设定值、现场辐照度与逆变器可用功率。
+
 ### 附近网格模型天气
 
 天气来自 [Open‑Meteo Forecast API](https://open-meteo.com/en/docs)。它是 Yulara 附近网格的天气模型结果，不是五个光伏站点各自现场传感器的实测值。由于站点相距很近，第一版共享一个附近网格，不制造虚假的站点级天气差异。

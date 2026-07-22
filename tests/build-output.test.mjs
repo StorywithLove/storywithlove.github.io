@@ -27,4 +27,8 @@ test("production bundle contains the OCI primary and Solar Centre fallback", asy
   ).join("\n");
   assert.match(bundle, /api\.xn--fhq9f80kj05g\.com\/api\/v1/);
   assert.match(bundle, /solarcentre\.spinifexvalley\.com\.au\/power\/average/);
+  assert.match(bundle, /可调度阵列/);
+  assert.match(bundle, /理论可用功率/);
+  assert.match(bundle, /the-power-of-far-flung-arrays-yularas-dispersed-design-to-reduce-system-variability\.pdf/);
+  assert.match(bundle, /dkasolarcentre\.com\.au\/source\/yulara\/yulara-1-fixed/);
 });

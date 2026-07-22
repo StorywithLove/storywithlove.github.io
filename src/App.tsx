@@ -38,6 +38,10 @@ import type {
 } from "./types";
 
 const DARWIN_TZ = "Australia/Darwin";
+const ARENA_CURTAILMENT_REPORT_URL =
+  "https://www.arena.gov.au/assets/2018/12/the-power-of-far-flung-arrays-yularas-dispersed-design-to-reduce-system-variability.pdf";
+const DESERT_GARDENS_SOURCE_URL =
+  "https://dkasolarcentre.com.au/source/yulara/yulara-1-fixed";
 const dateTimeDarwin = new Intl.DateTimeFormat("zh-CN", {
   timeZone: DARWIN_TZ,
   year: "numeric",
@@ -459,7 +463,11 @@ function App() {
                   style={{ "--site-color": site.color } as React.CSSProperties}
                 >
                   <span className="site-card-index">{site.arrayLabel.padStart(2, "0")}</span>
-                  <span className="site-card-title"><strong>{site.name}</strong><small>site_id {site.id} · {site.capacityKw.toLocaleString()} kW</small></span>
+                  <span className="site-card-title">
+                    <strong>{site.name}</strong>
+                    {site.id === 5 && <span className="site-card-status">可调度阵列</span>}
+                    <small>site_id {site.id} · {site.capacityKw.toLocaleString()} kW</small>
+                  </span>
                   <span className="site-card-power"><strong>{formatPower(value)}</strong><small>kW</small></span>
                   <span className="mini-meter" aria-label={siteUtilization === null ? "容量利用率不可用" : `容量利用率 ${siteUtilization.toFixed(1)}%`}>
                     <i style={{ width: `${Math.max(0, Math.min(100, siteUtilization ?? 0))}%` }} />
@@ -471,6 +479,14 @@ function App() {
               );
             })}
           </div>
+          <aside className="curtailment-note live-curtailment-note" aria-label="Desert Gardens 限发说明">
+            <span className="note-mark" aria-hidden="true">*</span>
+            <p>
+              Desert Gardens 可接受中央电站的实时
+              <a href={ARENA_CURTAILMENT_REPORT_URL} target="_blank" rel="noreferrer">限发控制</a>。
+              晴朗正午的实际并网功率可能低于上午或下午，这通常反映电网负荷与稳定性约束，并不一定代表设备故障。
+            </p>
+          </aside>
         </section>
 
         <section className="section map-section" id="map" aria-labelledby="map-title">
@@ -546,6 +562,13 @@ function App() {
               <HistoryChart sites={sites} points={history?.points ?? []} selectedSiteIds={selectedHistorySites} focusedSiteId={selectedSiteId} />
             )}
           </div>
+          <aside className="curtailment-note history-curtailment-note" aria-label="Desert Gardens 历史曲线解读">
+            <CircleAlert size={17} aria-hidden="true" />
+            <p>
+              <strong>曲线解读：</strong>Desert Gardens 的双峰或正午谷值可能来自电网限发；曲线表示实际输出，不表示理论可发功率。
+              该形态与已确认的限发机制高度一致，但若要确认某一个五分钟点的具体限发量，仍需 SCADA 功率设定值、现场辐照度和逆变器可用功率。
+            </p>
+          </aside>
           <div className="quality-grid">
             <article><span>数据完整率</span><strong>{history ? `${quality.completeness.toFixed(1)}%` : "—"}</strong><small>{quality.available.toLocaleString()} / {quality.expected.toLocaleString()} 个预期站点时点有值</small></article>
             <article><span>缺失值</span><strong>{history ? quality.nullCount.toLocaleString() : "—"}</strong><small>保留为空，不以 0 替代</small></article>
@@ -564,6 +587,24 @@ function App() {
             <article><Gauge size={22} /><p>DERIVED METRICS</p><h3>页面计算指标</h3><p>总功率、容量利用率、站点贡献、数据新鲜度、完整率和满足阈值时的今日发电量，均由浏览器基于真实功率序列计算，不是官方结算口径。</p><dl><div><dt>空值处理</dt><dd>保留缺失，不用 0 填充</dd></div><div><dt>负值处理</dt><dd>保留并明确标注</dd></div></dl></article>
             <article><Satellite size={22} /><p>MODEL WEATHER</p><h3>附近网格模型天气</h3><p>气温、湿度、10 m 风、GHI、日出与日落来自 Open‑Meteo 的附近网格模型。五站位置接近，因此共享同一网格结果。</p><dl><div><dt>重要说明</dt><dd>并非五个站点各自的现场传感器实测值</dd></div><div><dt>天气观测时刻</dt><dd>{weather?.observedAt ? `${dateTimeDarwin.format(new Date(weather.observedAt))} ACST` : "暂不可用"}</dd></div></dl></article>
           </div>
+          <aside className="curtailment-brief" aria-labelledby="curtailment-title">
+            <div className="curtailment-brief-heading">
+              <p>OPERATIONAL CONTEXT</p>
+              <h3 id="curtailment-title">限发机制 <span>/ Curtailment</span></h3>
+            </div>
+            <div className="curtailment-brief-copy">
+              <p>Desert Gardens 是 Yulara 系统中容量最大的光伏阵列，同时也是主要的可调度阵列。ARENA 项目报告指出，该阵列会根据当地电力负荷响应中央电站的实时限发指令，以维持远端小型电网的稳定。因此，公开数据展示的是<strong>实际并网功率</strong>，并不等同于当时太阳资源能够产生的<strong>理论可用功率</strong>。</p>
+              <p className="curtailment-caveat">公开曲线可以支持机制层面的解释，但不能单独证明某一个五分钟时点的具体限发量。</p>
+            </div>
+            <div className="curtailment-brief-evidence">
+              <dl>
+                <div><dt>年度弃光估算</dt><dd>约 28%</dd></div>
+                <div><dt>较高限发案例</dt><dd>约 800 kW</dd></div>
+              </dl>
+              <a href={ARENA_CURTAILMENT_REPORT_URL} target="_blank" rel="noreferrer">ARENA 官方报告 <ArrowUpRight size={14} /></a>
+              <a href={DESERT_GARDENS_SOURCE_URL} target="_blank" rel="noreferrer">DKA 站点资料 <ArrowUpRight size={14} /></a>
+            </div>
+          </aside>
           <div className="method-flow" aria-label="项目数据处理流程">
             {["采集", "校验与保留原值", "按站点与时间归档", "交互展示与派生计算"].map((label, index) => (
               <div key={label}><span>{String(index + 1).padStart(2, "0")}</span><strong>{label}</strong>{index < 3 && <i aria-hidden="true" />}</div>
