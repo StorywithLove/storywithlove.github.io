@@ -2,7 +2,7 @@
 
 这是一个长期维护的个人项目实验室与项目档案馆，而不是传统简历网站。第一版完整展示澳大利亚 Yulara Solar System：五个分布式光伏子系统的真实五分钟功率、站点地图、附近网格模型天气、历史曲线与数据质量说明。
 
-网站计划发布于 `https://storywithlove.github.io/`，源码仓库为公开仓库。前端不保存秘密，也不直接连接数据库。
+网站发布于 [https://storywithlove.github.io/](https://storywithlove.github.io/)，源码仓库为公开仓库。前端不保存秘密，也不直接连接数据库。
 
 ## 第一版能力
 
