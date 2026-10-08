@@ -7,7 +7,7 @@
 - Frontend source baseline:
   `https://github.com/StorywithLove/storywithlove.github.io`, branch `main`.
 - Backend source baseline:
-  `https://github.com/StorywithLove/pv-forecast-backend`, branch `main`.
+  `https://github.com/StorywithLove/pv-data-api`, branch `main`.
   The backend repository is private.
 - Frontend deployment: GitHub Pages through the repository's Pages workflow.
 - Backend deployment: OCI under `/data/pv-forecast`.
@@ -75,12 +75,13 @@ Run the live API check when the change affects API use, deployment, CORS, data
 adapters, or the Agent. A transient external-service failure must be diagnosed,
 not bypassed.
 
-Backend checks must use the repository's documented Python environment. On
-managed Codex machines, follow the machine-level Python instructions and invoke
-that environment's interpreter explicitly:
+Backend checks must use the backend repository's Python environment. Its CI uses
+Python 3.12 with the dependencies from that repository's `requirements.txt`;
+reproduce that environment, or use any Python 3.12 interpreter with those
+dependencies installed:
 
 ```text
-<pv-forecast-environment-python> -m unittest discover -s tests -q
+python -m unittest discover -s tests -q
 ```
 
 Follow any more specific `AGENTS.md` inside the backend repository.
