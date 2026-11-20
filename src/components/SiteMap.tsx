@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import {
+  LayerGroup,
   LayersControl,
   MapContainer,
   Marker,
@@ -10,6 +11,14 @@ import {
 } from "react-leaflet";
 import { YULARA_CENTRE } from "../data/sites";
 import type { SiteId, SolarSite } from "../types";
+
+// Public browser tile token. It is protected by the domain allow-list on the
+// Tianditu console, not by secrecy.
+const TIANDITU_TK = "2fe2d9b834d1cd9d9526fe9236dfe17a";
+const tiandituUrl = (layer: "img" | "cia" | "vec" | "cva" | "ter" | "cta") =>
+  `https://t{s}.tianditu.gov.cn/${layer}_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0` +
+  `&LAYER=${layer}&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles` +
+  `&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&tk=${TIANDITU_TK}`;
 
 interface SiteMapProps {
   sites: SolarSite[];
@@ -58,6 +67,61 @@ export function SiteMap({ sites, selectedSiteId, onSelect }: SiteMapProps) {
         aria-label="Yulara 五个光伏子系统的交互式地图"
       >
         <LayersControl position="topright">
+          <LayersControl.BaseLayer name="天地图影像">
+            <LayerGroup>
+              {/* Outside China the imagery stops around zoom 12 and deeper
+                  levels return a "no imagery here" placeholder, so cap the
+                  native zoom and let Leaflet upscale instead. */}
+              <TileLayer
+                attribution='&copy; <a href="https://www.tianditu.gov.cn/">天地图</a>'
+                url={tiandituUrl("img")}
+                subdomains="01234567"
+                maxNativeZoom={12}
+                maxZoom={18}
+                eventHandlers={{ tileerror: () => setTileError(true) }}
+              />
+              <TileLayer
+                url={tiandituUrl("cia")}
+                subdomains="01234567"
+                maxNativeZoom={12}
+                maxZoom={18}
+              />
+            </LayerGroup>
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="天地图矢量">
+            <LayerGroup>
+              <TileLayer
+                attribution='&copy; <a href="https://www.tianditu.gov.cn/">天地图</a>'
+                url={tiandituUrl("vec")}
+                subdomains="01234567"
+                maxZoom={18}
+                eventHandlers={{ tileerror: () => setTileError(true) }}
+              />
+              <TileLayer
+                url={tiandituUrl("cva")}
+                subdomains="01234567"
+                maxZoom={18}
+              />
+            </LayerGroup>
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="天地图地形">
+            <LayerGroup>
+              <TileLayer
+                attribution='&copy; <a href="https://www.tianditu.gov.cn/">天地图</a>'
+                url={tiandituUrl("ter")}
+                subdomains="01234567"
+                maxNativeZoom={12}
+                maxZoom={18}
+                eventHandlers={{ tileerror: () => setTileError(true) }}
+              />
+              <TileLayer
+                url={tiandituUrl("cta")}
+                subdomains="01234567"
+                maxNativeZoom={12}
+                maxZoom={18}
+              />
+            </LayerGroup>
+          </LayersControl.BaseLayer>
           <LayersControl.BaseLayer checked name="普通地图">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -101,6 +165,9 @@ export function SiteMap({ sites, selectedSiteId, onSelect }: SiteMapProps) {
         ))}
         <MapFocus site={sites.find((site) => site.id === selectedSiteId)} />
       </MapContainer>
+      <p className="map-notice">
+        查看中国区域请切换到「天地图」底图；普通地图与卫星影像的中国边界显示不准确。
+      </p>
       {tileError && (
         <p className="map-fallback" role="status">
           部分底图图块暂时无法加载；站点列表和数据功能仍可使用。

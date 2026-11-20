@@ -50,6 +50,8 @@ const allowedHosts = new Set([
   "api.open-meteo.com",
   "tile.openstreetmap.org",
   "{s}.tile.openstreetmap.org",
+  "t{s}.tianditu.gov.cn",
+  "www.tianditu.gov.cn",
   "server.arcgisonline.com",
   "www.openstreetmap.org",
   "www.esri.com",
