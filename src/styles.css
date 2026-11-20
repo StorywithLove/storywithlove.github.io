@@ -174,7 +174,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, .leaflet-container:f
 .map-popup dl div { display: grid; grid-template-columns: 62px 1fr; gap: 8px; padding: 5px 0; border-top: 1px solid #d8cebe; }
 .map-popup dt { color: var(--muted); }
 .map-popup dd { margin: 0; font: 10px/1.45 ui-monospace, monospace; }
-.map-fallback { position: absolute; z-index: 500; left: 12px; bottom: 12px; background: var(--paper); color: var(--ink); padding: 10px 12px; margin: 0; max-width: 310px; font-size: 11px; border-left: 4px solid var(--clay); }
+.map-notice { position: absolute; z-index: 500; left: 12px; bottom: 12px; margin: 0; padding: 7px 10px; max-width: 330px; background: rgba(251, 246, 238, .94); color: var(--muted); font-size: 11px; line-height: 1.5; border-left: 3px solid var(--clay); }
+.map-fallback { position: absolute; z-index: 500; left: 12px; bottom: 58px; background: var(--paper); color: var(--ink); padding: 10px 12px; margin: 0; max-width: 310px; font-size: 11px; border-left: 4px solid var(--clay); }
 .site-detail { background: var(--sand); color: var(--ink); padding: 34px 28px; }
 .site-detail > p:first-child { color: var(--clay); font: 800 9px ui-monospace, monospace; letter-spacing: .15em; }
 .site-detail h3 { font-size: 28px; line-height: 1.05; letter-spacing: -.035em; margin: 12px 0 35px; }
